@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" th:replace="~{base :: parent(~{::title}, ~{::#content})}">
+<head >
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title data-th-text="${loggedInUser.name}">Profile Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" data-th-href="@{/css/output.css}" />
 </head>
 <body>
-    <h1>This is dashboard page</h1>
+    <div id="content" class="md:pl-64 pt-24">
+        <h1 class="text-center text-3xl">Welcome to Dashboard Page</h1>
 
-    <form action="/logout" method="POST">
-        <button type="submit" class="px-3 py-2 rounded bg-red-700 text-white">Logout</button>
-    </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    </div>
 </body>
 </html>
