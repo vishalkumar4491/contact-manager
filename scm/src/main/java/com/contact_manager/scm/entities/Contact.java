@@ -14,12 +14,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Contact {
     @Id
     private String id;
@@ -27,9 +29,13 @@ public class Contact {
     private String email;
     private String phoneNumber;
     private String address;
+    private String picture;
     @Column(length=1000)
     private String description;
     private boolean favorite = false;
+
+    private String websiteLink;
+    private String linkedInLink;
 
     @ManyToOne
     private User user;
