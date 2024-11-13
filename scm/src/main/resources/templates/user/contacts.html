@@ -98,15 +98,15 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div>
-                                        <a href="">
+                                        <a th:href="@{'/user/contact/delete/'+*{id}}">
                                         <i class="fa-solid fa-trash mr-1"></i>
                                         </a>
-                                        <a href="">
+                                        <a >
                                         <i class="fa-solid fa-pen mr-1"></i>
                                         </a>
-                                        <a href="">
+                                        <button th:data-id="${contact.id}" th:onclick="loadContactdata(this.getAttribute('data-id'))">
                                             <i class="fa-solid fa-eye"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -136,10 +136,65 @@
                     </div>
                 </div>
 
+                <div data-th-replace="~{user/contact_modals :: contact_details}"></div>
+
                 
             </div>
         </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const viewContactModal = document.getElementById('view_contact_modal');
+
+                // Check if modal element is found
+                if (viewContactModal) {
+                    // Define modal options
+                    const options = {
+                        placement: 'bottom-right',
+                        backdrop: 'dynamic',
+                        backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40',
+                        closable: true,
+                        onHide: () => console.log('Modal is hidden'),
+                        onShow: () => console.log('Modal is shown'),
+                        onToggle: () => console.log('Modal has been toggled'),
+                    };
+
+                    // Instance options for the modal
+                    const instanceOptions = {
+                        id: 'view_contact_modal',
+                        override: true
+                    };
+
+                    // Initialize contactModal
+                    const contactModal = new Modal(viewContactModal, options, instanceOptions);
+
+                    // Define the function to open the modal
+                    window.openContactModal = function () {
+                        contactModal.show();
+                    };
+
+                    // Define the function to close the modal
+                    window.closeContactModal = function () {
+                        contactModal.hide();
+                    };
+
+                    window.loadContactdata = async function (id) {
+                        try {
+                            console.log(id);
+                            const data = await (await fetch(`http://localhost:8080/user/contact/api/${id}`)
+                            ).json()
+                            console.log(data);
+                            document.getElementById('contact_name').innerHTML = data.name;
+                            openContactModal();
+                        } catch (error) {
+                            console.log("Error ", error);
+                        }
+                    };
+                } else {
+                    console.error('Modal element with id "view_contact_modal" not found in the DOM.');
+                }
+            });
+        </script>
 
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     </div>

@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.contact_manager.scm.entities.Contact;
 import com.contact_manager.scm.entities.User;
@@ -125,5 +127,20 @@ public class ContactController {
         model.addAttribute("pageContacts", pageContacts);
         return "user/search";
     }
+
+    // for view details of particular contact on clicking of eye button
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    // public String getContactDetails(@PathVariable String id, Model model) {
+    public Contact getContactDetails(@PathVariable String id) {
+        // Contact contact = contactService.getById(id);
+        System.out.println("phuch gya");
+        System.out.println("ID " + id);
+         return contactService.getById(id);
+        // model.addAttribute("contact", contact);
+        // return "user/contact_details";
+    }
+    
+    
 
 }

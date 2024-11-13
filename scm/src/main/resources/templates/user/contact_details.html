@@ -1,0 +1,46 @@
+
+
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base :: parent(~{::title}, ~{::#content})}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Page</title>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-800">
+    <div id="content" class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-semibold text-center mb-8" th:text="'Details of ' + ${contact.name}">Contact Details
+        </h1>
+
+        <div class="bg-white shadow rounded-lg p-6 dark:bg-gray-700 dark:text-white">
+            <div class="flex items-center mb-4">
+                <!-- <img class="w-16 h-16 rounded-full" th:src="${contact.profileImage}" alt="Profile Image"> -->
+                <div class="ml-4">
+                    <h2 class="text-2xl font-bold" th:text="${contact.name}">Contact Name</h2>
+                    <p class="text-gray-600 dark:text-gray-400" th:text="${contact.email}">contact.email@example.com</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <p><strong>Phone:</strong> <span th:text="${contact.phoneNumber}">123-456-7890</span></p>
+                <p><strong>Website:</strong> <a th:href="${contact.websiteLink}" target="_blank"
+                        class="text-blue-500">Visit Website</a></p>
+                <p><strong>LinkedIn:</strong> <a th:href="${contact.linkedInLink}" target="_blank"
+                        class="text-blue-500">Visit LinkedIn</a></p>
+                <p><strong>Favorite:</strong> <span th:text="${contact.favorite ? 'Yes' : 'No'}"></span></p>
+
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="/user/contact" class="text-blue-500 hover:underline">Back to Contacts List</a>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+
+</html>
