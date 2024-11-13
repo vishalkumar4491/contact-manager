@@ -141,6 +141,12 @@ public class ContactController {
         // return "user/contact_details";
     }
     
+    // delete contact
+    @RequestMapping("/delete/{id}")
+    public String deleteContact(@PathVariable String id) {
+        contactService.delete(id);
+        return "redirect:/user/contact";
+    }
     
 
 }
