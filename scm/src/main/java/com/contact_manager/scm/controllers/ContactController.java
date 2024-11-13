@@ -1,6 +1,7 @@
 package com.contact_manager.scm.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.contact_manager.scm.entities.Contact;
 import com.contact_manager.scm.entities.User;
@@ -74,6 +76,54 @@ public class ContactController {
         return "redirect:/user/contact/add";
     }
     
-    
+    // view contacts
+    // since we are not passing any value so it will directly run user/contact url
+    @RequestMapping
+    public String viewContacts(@RequestParam(value="page",defaultValue= "0") int page, 
+                        @RequestParam(value="size",defaultValue= "3") int size,
+                        @RequestParam(value="sortBy",defaultValue= "name") String sortBy,
+                        @RequestParam(value="direction",defaultValue= "asc") String direction,
+                        Model model, Authentication authentication){
+        // Load all the user contacts
+        String username = Helper.getEmailOfLoggedInUser(authentication);
+        User user = userService.getUserByEmail(username);
+
+        Page<Contact> pageContacts = contactService.getByUser(user, page, size, sortBy, direction);
+        model.addAttribute("pageContacts", pageContacts);
+        
+        return "user/contacts";
+    }
+
+    // search handler
+
+    @RequestMapping(value="/search", method=RequestMethod.GET)
+    public String searchHandler(
+        @RequestParam("searchType") String searchType,
+        @RequestParam("searchWord") String searchWord,
+        @RequestParam(value="page",defaultValue= "0") int page, 
+        @RequestParam(value="size",defaultValue= "3") int size,
+        @RequestParam(value="sortBy",defaultValue= "name") String sortBy,
+        @RequestParam(value="direction",defaultValue= "asc") String direction,
+        Model model, Authentication authentication
+        ){
+           
+        
+        var user = userService.getUserByEmail(Helper.getEmailOfLoggedInUser(authentication));
+
+        Page<Contact> pageContacts = contactService.searchByName(searchWord, page, size, sortBy, direction, user);
+        if(searchType.equalsIgnoreCase("name")){
+            pageContacts  = contactService.searchByName(searchWord, page, size, sortBy, direction, user);
+        }else if(searchType.equalsIgnoreCase("email")){
+            pageContacts  = contactService.searchByEmail(searchWord, page, size, sortBy, direction, user);
+        }else if(searchType.equalsIgnoreCase("phoneNumber")){
+            pageContacts  = contactService.searchByPhoneNumber(searchWord, page, size, sortBy, direction, user);
+        }
+        System.out.println("pageContacts" + pageContacts.toString());
+        
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchWord", searchWord);
+        model.addAttribute("pageContacts", pageContacts);
+        return "user/search";
+    }
 
 }
