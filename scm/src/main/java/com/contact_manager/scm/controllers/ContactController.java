@@ -26,8 +26,6 @@ import com.contact_manager.scm.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-
-
 @Controller
 @RequestMapping("/user/contact")
 public class ContactController {
@@ -38,7 +36,7 @@ public class ContactController {
     @Autowired
     private UserService userService;
 
-    // add contact 
+    // add contact
     @GetMapping("/add")
     public String getContact(Model model) {
         ContactForm contactForm = new ContactForm();
@@ -46,11 +44,12 @@ public class ContactController {
         return "user/add_contact";
     }
 
-    @RequestMapping(value="/add", method=RequestMethod.POST)
-    public String addContact(@Valid @ModelAttribute ContactForm contactForm, BindingResult result, Authentication authentication, HttpSession session) {
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public String addContact(@Valid @ModelAttribute ContactForm contactForm, BindingResult result,
+            Authentication authentication, HttpSession session) {
 
         // Validate the form
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             return "user/add_contact";
         }
         String username = Helper.getEmailOfLoggedInUser(authentication);
@@ -72,56 +71,54 @@ public class ContactController {
 
         contactService.save(contact);
 
-        session.setAttribute("message", 
-        Message.builder().content("Successfully added a new contact").type(MessageType.green).build());
-        
+        session.setAttribute("message",
+                Message.builder().content("Successfully added a new contact").type(MessageType.green).build());
+
         return "redirect:/user/contact/add";
     }
-    
+
     // view contacts
     // since we are not passing any value so it will directly run user/contact url
     @RequestMapping
-    public String viewContacts(@RequestParam(value="page",defaultValue= "0") int page, 
-                        @RequestParam(value="size",defaultValue= "3") int size,
-                        @RequestParam(value="sortBy",defaultValue= "name") String sortBy,
-                        @RequestParam(value="direction",defaultValue= "asc") String direction,
-                        Model model, Authentication authentication){
+    public String viewContacts(@RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "3") int size,
+            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction,
+            Model model, Authentication authentication) {
         // Load all the user contacts
         String username = Helper.getEmailOfLoggedInUser(authentication);
         User user = userService.getUserByEmail(username);
 
         Page<Contact> pageContacts = contactService.getByUser(user, page, size, sortBy, direction);
         model.addAttribute("pageContacts", pageContacts);
-        
+
         return "user/contacts";
     }
 
     // search handler
 
-    @RequestMapping(value="/search", method=RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String searchHandler(
-        @RequestParam("searchType") String searchType,
-        @RequestParam("searchWord") String searchWord,
-        @RequestParam(value="page",defaultValue= "0") int page, 
-        @RequestParam(value="size",defaultValue= "3") int size,
-        @RequestParam(value="sortBy",defaultValue= "name") String sortBy,
-        @RequestParam(value="direction",defaultValue= "asc") String direction,
-        Model model, Authentication authentication
-        ){
-           
-        
+            @RequestParam("searchType") String searchType,
+            @RequestParam("searchWord") String searchWord,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "3") int size,
+            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction,
+            Model model, Authentication authentication) {
+
         var user = userService.getUserByEmail(Helper.getEmailOfLoggedInUser(authentication));
 
         Page<Contact> pageContacts = contactService.searchByName(searchWord, page, size, sortBy, direction, user);
-        if(searchType.equalsIgnoreCase("name")){
-            pageContacts  = contactService.searchByName(searchWord, page, size, sortBy, direction, user);
-        }else if(searchType.equalsIgnoreCase("email")){
-            pageContacts  = contactService.searchByEmail(searchWord, page, size, sortBy, direction, user);
-        }else if(searchType.equalsIgnoreCase("phoneNumber")){
-            pageContacts  = contactService.searchByPhoneNumber(searchWord, page, size, sortBy, direction, user);
+        if (searchType.equalsIgnoreCase("name")) {
+            pageContacts = contactService.searchByName(searchWord, page, size, sortBy, direction, user);
+        } else if (searchType.equalsIgnoreCase("email")) {
+            pageContacts = contactService.searchByEmail(searchWord, page, size, sortBy, direction, user);
+        } else if (searchType.equalsIgnoreCase("phoneNumber")) {
+            pageContacts = contactService.searchByPhoneNumber(searchWord, page, size, sortBy, direction, user);
         }
         System.out.println("pageContacts" + pageContacts.toString());
-        
+
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("pageContacts", pageContacts);
@@ -136,17 +133,59 @@ public class ContactController {
         // Contact contact = contactService.getById(id);
         System.out.println("phuch gya");
         System.out.println("ID " + id);
-         return contactService.getById(id);
+        return contactService.getById(id);
         // model.addAttribute("contact", contact);
         // return "user/contact_details";
     }
-    
+
     // delete contact
     @RequestMapping("/delete/{id}")
     public String deleteContact(@PathVariable String id) {
         contactService.delete(id);
         return "redirect:/user/contact";
     }
-    
+
+    // update contact form view
+    @RequestMapping("/view/{id}")
+    public String updateContactFormView(@PathVariable String id, Model model) {
+
+        var contact = contactService.getById(id);
+        ContactForm contactForm = new ContactForm();
+        contactForm.setName(contact.getName());
+        contactForm.setEmail(contact.getEmail());
+        contactForm.setPhoneNumber(contact.getPhoneNumber());
+        contactForm.setAddress(contact.getAddress());
+        contactForm.setDescription(contact.getDescription());
+        contactForm.setFavorite(contact.isFavorite());
+        contactForm.setWebsiteLink(contact.getWebsiteLink());
+        contactForm.setLinkedInLink(contact.getLinkedInLink());
+
+        model.addAttribute("contactForm", contactForm);
+        model.addAttribute("id", id);
+
+        return "user/update_contact";
+    }
+
+    // update the contact details
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
+    public String requestMethodName(@PathVariable String id, @ModelAttribute ContactForm contactForm, Model model) {
+
+        var contact2 = new Contact();
+
+        contact2.setId(id);
+
+        contact2.setName(contactForm.getName());
+        contact2.setEmail(contactForm.getEmail());
+        contact2.setPhoneNumber(contactForm.getPhoneNumber());
+        contact2.setAddress(contactForm.getAddress());
+        contact2.setDescription(contactForm.getDescription());
+        contact2.setFavorite(contactForm.isFavorite());
+        contact2.setWebsiteLink(contactForm.getWebsiteLink());
+        contact2.setLinkedInLink(contactForm.getLinkedInLink());
+
+        contactService.update(contact2);
+
+        return "redirect:/user/contact/view/" + id;
+    }
 
 }

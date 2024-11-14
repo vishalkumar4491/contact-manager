@@ -101,12 +101,19 @@
                                         <!-- <a th:href="@{'/user/contact/delete/'+*{id}}">
                                         <i class="fa-solid fa-trash mr-1"></i>
                                         </a> -->
+
+                                        <!-- Delete -->
                                         <button th:data-id="${contact.id}" th:onclick="deleteContact(this.getAttribute('data-id'))">
                                             <i class="fa-solid fa-trash mr-1"></i>
                                         </button>
-                                        <a >
+
+
+                                        <!-- update -->
+                                        <a th:href="@{'/user/contact/view/'+*{id}}">
                                         <i class="fa-solid fa-pen mr-1"></i>
                                         </a>
+
+                                        <!-- View -->
                                         <button th:data-id="${contact.id}" th:onclick="loadContactdata(this.getAttribute('data-id'))">
                                             <i class="fa-solid fa-eye"></i>
                                         </button>
