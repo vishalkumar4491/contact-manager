@@ -21,6 +21,9 @@ public class SecurityConfig {
     @Autowired
     private OAuthAuthenticationSuccessHandler handler;
 
+    @Autowired
+    private AuthFailureHandler authFailureHandler;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -70,6 +73,8 @@ public class SecurityConfig {
             formLogin.usernameParameter("email");
 
             formLogin.passwordParameter("password");
+
+            formLogin.failureHandler(authFailureHandler);
 
         });
 

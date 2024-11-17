@@ -82,28 +82,54 @@ public class PageController {
             return "register";
         }
 
-        User user = new User();
-        user.setName(userForm.getName());
-        user.setEmail(userForm.getEmail());
-        user.setPassword(userForm.getPassword());
-        user.setAbout(userForm.getAbout());
-        user.setPhoneNumber(userForm.getPhoneNumber());
-        user.setProfilePic("https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dpic&psig=AOvVaw3DqSCABBYScvwhLtkuYJND&ust=1729407144470000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNDth-btmYkDFQAAAAAdAAAAABAO");
+        try {
+            
+            User user = new User();
+            user.setName(userForm.getName());
+            user.setEmail(userForm.getEmail());
+            user.setPassword(userForm.getPassword());
+            user.setAbout(userForm.getAbout());
+            user.setPhoneNumber(userForm.getPhoneNumber());
+            user.setProfilePic("https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dpic&psig=AOvVaw3DqSCABBYScvwhLtkuYJND&ust=1729407144470000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCNDth-btmYkDFQAAAAAdAAAAABAO");
+    
+            user.setEnabled(false);
+    
+            User savedUser = userService.saveUser(user);
+    
+            System.out.println(savedUser);
+    
+            // message = "Registration Successfull"
+    
+            Message message = Message.builder().content("Registration Successful").type(MessageType.green).build();
+    
+            System.out.println("User Saved");
+    
+            session.setAttribute("message", message);
+    
+            // redirect
+            return "redirect:/register";
+        } catch (IllegalStateException e) {
+            // Email exists but not verified
+            Message message = Message.builder()
+                    .content("Email already exists but is not verified. Please verify your email.")
+                    .type(MessageType.yellow)
+                    .build();
+            session.setAttribute("message", message);
 
-        User savedUser = userService.saveUser(user);
+            return "redirect:/register";
 
-        System.out.println(savedUser);
+        } catch (IllegalArgumentException e) {
+            // Email exists and verified
+            Message message = Message.builder()
+                    .content("User with this email already exists.")
+                    .type(MessageType.red)
+                    .build();
+            session.setAttribute("message", message);
 
-        // message = "Registration Successfull"
+            return "redirect:/register";
+        }
+        
 
-        Message message = Message.builder().content("Registration Successful").type(MessageType.green).build();
-
-        System.out.println("User Saved");
-
-        session.setAttribute("message", message);
-
-        // redirect
-        return "redirect:/register";
     }
     
 }

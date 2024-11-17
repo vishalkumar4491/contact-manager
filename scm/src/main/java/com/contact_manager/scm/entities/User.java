@@ -45,9 +45,11 @@ public class User implements  UserDetails{
     private String profilePic;
 
     @Getter(value=AccessLevel.NONE)
-    private boolean enabled = true;
+    private boolean enabled = false;
     private boolean emailVerified = false;
     private boolean phoneVerified = false;
+
+    private String emailVerificationToken;
 
     // how user login or signup Google, fb, twitter, self etc
     @Enumerated(value = EnumType.STRING)

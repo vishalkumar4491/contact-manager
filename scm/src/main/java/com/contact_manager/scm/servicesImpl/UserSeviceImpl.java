@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.contact_manager.scm.entities.User;
 import com.contact_manager.scm.helper.AppConstants;
+import com.contact_manager.scm.helper.Helper;
 import com.contact_manager.scm.helper.ResourceNotFoundException;
 import com.contact_manager.scm.repositories.UserRepo;
+import com.contact_manager.scm.services.EmailService;
 import com.contact_manager.scm.services.UserService;
 
 @Service
@@ -25,11 +27,26 @@ public class UserSeviceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public EmailService emailService;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
     public User saveUser(User user) {
+
+        // Check if the email already exists
+        Optional<User> existingUser = userRepo.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+             User foundUser = existingUser.get();
+            if (!foundUser.isEnabled()) {
+                throw new IllegalStateException("Email already exists but is not verified. Please verify your email.");
+            } else {
+                throw new IllegalArgumentException("User with this email already exists.");
+            }
+        }
+
         // user Id have to be generate
         String userId = UUID.randomUUID().toString();
         user.setUserId(userId);
@@ -40,7 +57,17 @@ public class UserSeviceImpl implements UserService {
         // set the user role
         user.setRoleList(List.of(AppConstants.ROLE_USER));
 
-        return userRepo.save(user);
+        String emailVerificationToken = UUID.randomUUID().toString();
+
+        user.setEmailVerificationToken(emailVerificationToken);
+        User savedUser = userRepo.save(user);
+
+        
+        String emailLink = Helper.getLinkForEmailVerification(emailVerificationToken);
+
+        emailService.sendEmail(savedUser.getEmail(), "Please verify your email", emailLink);
+        
+        return savedUser;
     }
 
     @Override

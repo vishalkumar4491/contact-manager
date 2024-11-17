@@ -168,7 +168,12 @@ public class ContactController {
 
     // update the contact details
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
-    public String requestMethodName(@PathVariable String id, @ModelAttribute ContactForm contactForm, Model model) {
+    public String requestMethodName(@PathVariable String id, @Valid @ModelAttribute ContactForm contactForm,  BindingResult result, Model model) {
+
+        // Validate the form
+        if (result.hasErrors()) {
+            return "user/update_contact";
+        }
 
         var contact2 = new Contact();
 
@@ -184,6 +189,8 @@ public class ContactController {
         contact2.setLinkedInLink(contactForm.getLinkedInLink());
 
         contactService.update(contact2);
+
+
 
         return "redirect:/user/contact/view/" + id;
     }

@@ -24,8 +24,13 @@
                         <p class="font-normal text-gray-400 dark:text-gray-500">Your perfect contact manager...</p>
 
                         <!-- Form -->
-                        <form action="" data-th-action="@{'/user/contact/update/' + ${id}}" data-th-object="${contactForm}"
-                            method="post" enctype="multipart/form-data" class="mt-3" novalidate>
+                        <form action="" 
+                        data-th-action="@{'/user/contact/update/' + ${id}}" 
+                        data-th-object="${contactForm}"
+                        method="post" 
+                        enctype="multipart/form-data" 
+                        class="mt-3" 
+                        novalidate>
 
                             <!-- Name -->
                             <div class="mb-2">
